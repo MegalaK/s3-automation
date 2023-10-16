@@ -184,4 +184,73 @@ def move_file(archive_path, output_path):
     destination_path=os.path.join(archive_path, report)
     shutil.move(report_path,destination_path)
 
+def download_athena_results(in_query_exc_id):
+  s3_object = session.client('s3')
+  aws_bucket_name="somerandom"
+  qry_execuito_id=in_query_Exc_id
+  obj_key="somerandom/"+qry_execuito_id+".csc"
+  print(obj_key)
+  obj = s3_object.get_object(Bucket=aws_bucket_name, Key=obj_key)
+  athena_qry_rest_df=pd.read_csv(obj['Body'])  #5'Body' is a key word
+  return athena_qey_res_df
+
+def compare_csv(athena_df1):
+  df_dash1=pd.excel("c:\\Users\\Megala\\Automation_pytest\\final.xlsx',sheet_name=sheet_name1)
+  df_dash=df_dash1.sort_values(by=header,ascending=True)
+
+print(df_dash)
+if Temp_query=='Assessed_by_Status' or Temp_query=='Conditions_Viewed' or Temp_query=='Activity_By_Month':
+  df_dash.colums=df_dash.columns.str.lower()
+  athena_df1.colums=athena_df1.columns.str.lower()
+print(athena_df1)
+
+#Merge the DataFrames to compare
+merged_df=df_dash.merge(athena_df1, on=merrge, suffixes=('_Dashboard', '_Athena'))
+print(merged_df)
+
+merged_df['Result']=merged_df.apply(compare_values, axis=1)
+report_html=merged_df.to_html(index=False)
+output_file=config.getData("Queries","html_path")
+
+with open(html_path,'w') as f:
+f.write(report_html)
+
+def compare_values(row):
+ if Temp_query!='Activiy_by_Month' and Temp_query!='Conditions_Viewed' and Temp_query!='Usage_Detail'
+   if row[comp1]==row[comp2]:
+
+     return 'match'
+   else:
+     return 'mismatch'
+  elif temp_query=='Activity_by_Month':
+    if row[comp1]==row[comp3]:
+      if row[comp2]==row[comp4]:
+         return 'match'
+      else:
+         return 'mismatch'
+  else:
+         return 'mismatch'
+  
+ elif temp_query=='Conditions_Viewed':
+    if row[comp2]==row[comp5]:
+      if row[comp3]==row[comp6]:
+         return 'match'
+      else:
+         return 'mismatch'
+  else:
+         return 'mismatch'
+
+   elif temp_query=='Usage_detail':
+    if row[comp1]==row[comp4]:
+      if row[comp2]==row[comp5]:
+         return 'match'
+      else:
+         return 'mismatch'
+  else:
+         return 'mismatch'
+
+def Athena_view_comparison():
+  query_wxc_id=query_athena()
+  athena_qry_res_df=download_athena_results(query_Exc_id)
+  compare_csv(athena_qey_res_df)
   
